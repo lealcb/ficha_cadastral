@@ -4,7 +4,7 @@ import Docxtemplater from "docxtemplater";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { omitOptionalRg } from "./optional-fields.js";
+import { prepareTemplateXml } from "./optional-fields.js";
 
 const form = document.querySelector("#ficha-form");
 const button = document.querySelector("#generate-button");
@@ -77,7 +77,7 @@ async function createDocx(data) {
   if (!response.ok) throw new Error("O modelo DOCX não foi encontrado.");
   const template = await response.arrayBuffer();
   const zip = new PizZip(template);
-  zip.file("word/document.xml", omitOptionalRg(zip.file("word/document.xml").asText(), data));
+  zip.file("word/document.xml", prepareTemplateXml(zip.file("word/document.xml").asText(), data));
   const doc = new Docxtemplater(zip, {
     paragraphLoop: true,
     linebreaks: true,
