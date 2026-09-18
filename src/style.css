@@ -52,7 +52,7 @@ textarea { resize:vertical; min-height:74px; }
 .paper-stage { position:relative; width:100%; overflow:hidden; border-radius:14px; background:#dcd9e1; box-shadow:inset 0 0 0 1px rgba(44,38,57,.05); }
 .document-preview { --paper-scale:.7; position:absolute; top:16px; left:16px; width:794px; height:1123px; padding:36px 72px 40px; transform:scale(var(--paper-scale)); transform-origin:top left; overflow:hidden; color:#050505; background:#fff; box-shadow:0 7px 25px rgba(31,27,41,.17); font-family:"Times New Roman",serif; font-size:15px; }
 .doc-header { height:110px; display:flex; align-items:flex-start; gap:10px; }
-.doc-header img { width:150px; height:100px; object-fit:contain; object-position:left top; }
+.doc-logo { width:150px; height:100px; flex:0 0 150px; display:block; }
 .doc-company { padding-top:23px; display:flex; flex-direction:column; font-family:Arial,sans-serif; font-size:21px; line-height:1.18; white-space:nowrap; }
 .doc-rule { height:2px; background:#111; }
 .document-preview h3 { margin:22px 0 22px; text-align:center; text-decoration:underline; font-size:17px; }
