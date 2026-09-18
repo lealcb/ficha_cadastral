@@ -14,6 +14,8 @@ const preview = document.querySelector("#document-preview");
 const paperStage = document.querySelector("#paper-stage");
 const spouseToggle = document.querySelector("#tem-conjuge");
 const spouseFields = document.querySelector("#conjuge-fields");
+const whatsappButton = document.querySelector("#whatsapp-button");
+let generatedDocuments = null;
 
 function onlyNumbers(value) { return String(value || "").replace(/\D/g, ""); }
 function formatCpf(value) {
@@ -149,6 +151,50 @@ async function createBundle(docxBlob, pdfBlob, baseName) {
   zip.file(`${baseName}.pdf`, await pdfBlob.arrayBuffer());
   return zip.generate({ type: "blob", compression: "DEFLATE" });
 }
+
+function validateForm() {
+  errorBox.hidden = true;
+  syncSpouseSection();
+  if (form.checkValidity()) return true;
+  form.reportValidity();
+  errorBox.textContent = "Preencha todos os campos obrigatórios antes de gerar os documentos.";
+  errorBox.hidden = false;
+  return false;
+}
+
+async function buildDocuments() {
+  if (generatedDocuments) return generatedDocuments;
+
+  const data = getValues();
+  const baseName = safeFilename(`FICHA CADASTRAL ${data.loc_nome || "LOCATARIO"}`);
+  updatePreview();
+  await document.fonts.ready;
+
+  const [docxBlob, pdfBlob] = await Promise.all([createDocx(data), createPdf()]);
+  const docxFile = new File(
+    [docxBlob],
+    `${baseName}.docx`,
+    { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+  );
+  const pdfFile = new File(
+    [pdfBlob],
+    `${baseName}.pdf`,
+    { type: "application/pdf" },
+  );
+
+  generatedDocuments = { data, baseName, docxBlob, pdfBlob, docxFile, pdfFile };
+  return generatedDocuments;
+}
+
+function supportsNativeFileShare(files) {
+  if (typeof navigator.share !== "function") return false;
+  if (typeof navigator.canShare !== "function") return true;
+  try {
+    return navigator.canShare({ files });
+  } catch {
+    return false;
+  }
+}
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("visible");
@@ -162,30 +208,26 @@ for (const id of ["loc_cel", "conj_cel"]) {
   document.querySelector(`#${id}`).addEventListener("input", (event) => { event.target.value = formatPhone(event.target.value); });
 }
 spouseToggle.addEventListener("change", () => { syncSpouseSection(); updatePreview(); resizePreview(); });
-form.addEventListener("input", updatePreview);
-form.addEventListener("change", updatePreview);
+form.addEventListener("input", () => {
+  generatedDocuments = null;
+  updatePreview();
+});
+form.addEventListener("change", () => {
+  generatedDocuments = null;
+  updatePreview();
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  errorBox.hidden = true;
-  syncSpouseSection();
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    errorBox.textContent = "Preencha todos os campos obrigatórios antes de gerar os documentos.";
-    errorBox.hidden = false;
-    return;
-  }
+  if (!validateForm()) return;
 
-  const data = getValues();
-  const baseName = safeFilename(`FICHA CADASTRAL ${data.loc_nome || "LOCATARIO"}`);
   button.disabled = true;
+  whatsappButton.disabled = true;
   button.querySelector(".button-text").textContent = "Preparando documentos...";
   try {
-    updatePreview();
-    await document.fonts.ready;
-    const [docx, pdf] = await Promise.all([createDocx(data), createPdf()]);
-    const bundle = await createBundle(docx, pdf, baseName);
-    saveAs(bundle, `${baseName}.zip`);
+    const docs = await buildDocuments();
+    const bundle = await createBundle(docs.docxBlob, docs.pdfBlob, docs.baseName);
+    saveAs(bundle, `${docs.baseName}.zip`);
     showToast("WORD e PDF gerados com sucesso.");
   } catch (error) {
     console.error(error);
@@ -193,7 +235,71 @@ form.addEventListener("submit", async (event) => {
     errorBox.hidden = false;
   } finally {
     button.disabled = false;
+    whatsappButton.disabled = false;
     button.querySelector(".button-text").textContent = "Baixar WORD e PDF";
+  }
+});
+
+whatsappButton.addEventListener("click", async () => {
+  if (!validateForm()) return;
+
+  const originalText = "Compartilhar no WhatsApp";
+  whatsappButton.disabled = true;
+  button.disabled = true;
+  whatsappButton.querySelector(".whatsapp-button-text").textContent = "Preparando arquivos...";
+
+  let fallbackWindow = null;
+  const nativeShareExists = typeof navigator.share === "function";
+  if (!nativeShareExists) {
+    fallbackWindow = window.open("about:blank", "_blank");
+  }
+
+  try {
+    const docs = await buildDocuments();
+    const files = [docs.pdfFile, docs.docxFile];
+    const message = `Olá! Segue a ficha cadastral preenchida de ${docs.data.loc_nome}.`;
+
+    if (supportsNativeFileShare(files)) {
+      try {
+        await navigator.share({
+          title: "Ficha Cadastral - Casas Comigo",
+          text: message,
+          files,
+        });
+        showToast("Arquivos prontos para compartilhar.");
+        if (fallbackWindow) fallbackWindow.close();
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          if (fallbackWindow) fallbackWindow.close();
+          return;
+        }
+        console.warn("Compartilhamento nativo falhou; usando fallback.", error);
+      }
+    }
+
+    const bundle = await createBundle(docs.docxBlob, docs.pdfBlob, docs.baseName);
+    saveAs(bundle, `${docs.baseName}.zip`);
+
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+      `${message}\n\nO arquivo com o PDF e o Word acabou de ser baixado. É só anexá-lo nesta conversa.`,
+    )}`;
+
+    if (fallbackWindow && !fallbackWindow.closed) {
+      fallbackWindow.location.href = whatsappUrl;
+    } else {
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    }
+    showToast("ZIP baixado. Anexe-o no WhatsApp.");
+  } catch (error) {
+    if (fallbackWindow && !fallbackWindow.closed) fallbackWindow.close();
+    console.error(error);
+    errorBox.textContent = `Não foi possível preparar o compartilhamento: ${error.message}`;
+    errorBox.hidden = false;
+  } finally {
+    whatsappButton.disabled = false;
+    button.disabled = false;
+    whatsappButton.querySelector(".whatsapp-button-text").textContent = originalText;
   }
 });
 
