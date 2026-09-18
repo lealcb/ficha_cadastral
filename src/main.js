@@ -95,8 +95,6 @@ async function createDocx(data) {
 }
 async function createPdf() {
   const currentScale = preview.style.getPropertyValue("--paper-scale");
-  const logo = preview.querySelector("img");
-  if (logo?.decode) await logo.decode();
   preview.style.setProperty("--paper-scale", "1");
   await new Promise((resolve) => requestAnimationFrame(resolve));
   let canvas;
