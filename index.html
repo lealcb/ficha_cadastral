@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#5638c5" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="description" content="Preenchimento da ficha cadastral para locação" />
+    <title>Ficha Cadastral - Casas Comigo</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">G</div>
+          <div>
+            <p class="eyebrow">CASAS COMIGO</p>
+            <h1>Ficha cadastral</h1>
+          </div>
+        </div>
+        <div class="privacy-pill" title="As informações não são enviadas para nenhum servidor">
+          <span class="privacy-icon" aria-hidden="true">✓</span>
+          Dados ficam neste dispositivo
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="form-panel" aria-labelledby="form-title">
+          <div class="panel-heading">
+            <div>
+              <p class="kicker">LOCAÇÃO VIA CREDPAGO OU SEGURO FIANÇA</p>
+              <h2 id="form-title">Preencha seus dados</h2>
+            </div>
+            <p class="required-note"><span>*</span> Obrigatório</p>
+          </div>
+
+          <form id="ficha-form" novalidate>
+            <fieldset>
+              <legend><span>01</span> Dados do locatário</legend>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="ficha_numero">Ficha nº <i>opcional</i></label>
+                  <input id="ficha_numero" name="ficha_numero" type="text" placeholder="Ex.: 123" />
+                </div>
+                <div class="field">
+                  <label for="loc_nome">Nome completo <b>*</b></label>
+                  <input id="loc_nome" name="loc_nome" type="text" autocomplete="name" placeholder="Nome completo" required />
+                </div>
+                <div class="field">
+                  <label for="loc_cel">Celular <b>*</b></label>
+                  <input id="loc_cel" name="loc_cel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" required />
+                </div>
+                <div class="field">
+                  <label for="loc_email">E-mail <b>*</b></label>
+                  <input id="loc_email" name="loc_email" type="email" autocomplete="email" placeholder="nome@email.com" required />
+                </div>
+                <div class="field">
+                  <label for="loc_rg">RG <i>opcional</i></label>
+                  <input id="loc_rg" name="loc_rg" type="text" placeholder="RG" />
+                </div>
+                <div class="field">
+                  <label for="loc_cpf">CPF <b>*</b></label>
+                  <input id="loc_cpf" name="loc_cpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required />
+                </div>
+                <div class="field field-full">
+                  <label for="loc_endereco">Endereço completo <b>*</b></label>
+                  <textarea id="loc_endereco" name="loc_endereco" rows="2" placeholder="Rua, número, complemento, bairro, cidade, estado e CEP" required></textarea>
+                </div>
+                <div class="field">
+                  <label for="loc_nascimento">Data de nascimento <b>*</b></label>
+                  <input id="loc_nascimento" name="loc_nascimento" type="date" required />
+                </div>
+                <div class="field">
+                  <label for="loc_estado_civil">Estado civil <b>*</b></label>
+                  <select id="loc_estado_civil" name="loc_estado_civil" required>
+                    <option value="">Selecione</option>
+                    <option>Solteiro(a)</option><option>Casado(a)</option><option>União estável</option>
+                    <option>Divorciado(a)</option><option>Separado(a)</option><option>Viúvo(a)</option><option>Outro</option>
+                  </select>
+                </div>
+                <div class="field field-full">
+                  <label for="loc_profissao">Profissão <b>*</b></label>
+                  <input id="loc_profissao" name="loc_profissao" type="text" placeholder="Profissão" required />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend><span>02</span> Cônjuge <em>quando houver</em></legend>
+              <label class="section-toggle">
+                <input id="tem-conjuge" type="checkbox" aria-controls="conjuge-fields" />
+                <span>Incluir dados do cônjuge</span>
+              </label>
+              <div class="conditional-fields" id="conjuge-fields" hidden>
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="conj_nome">Nome completo <b>*</b></label>
+                    <input id="conj_nome" name="conj_nome" type="text" placeholder="Nome completo" data-conjuge-required />
+                  </div>
+                  <div class="field">
+                    <label for="conj_cel">Celular <b>*</b></label>
+                    <input id="conj_cel" name="conj_cel" type="tel" inputmode="tel" placeholder="(11) 99999-9999" data-conjuge-required />
+                  </div>
+                  <div class="field">
+                    <label for="conj_email">E-mail <b>*</b></label>
+                    <input id="conj_email" name="conj_email" type="email" placeholder="nome@email.com" data-conjuge-required />
+                  </div>
+                  <div class="field">
+                    <label for="conj_rg">RG <i>opcional</i></label>
+                    <input id="conj_rg" name="conj_rg" type="text" placeholder="RG" />
+                  </div>
+                  <div class="field">
+                    <label for="conj_cpf">CPF <b>*</b></label>
+                    <input id="conj_cpf" name="conj_cpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" data-conjuge-required />
+                  </div>
+                  <div class="field field-full">
+                    <label for="conj_endereco">Endereço completo <b>*</b></label>
+                    <textarea id="conj_endereco" name="conj_endereco" rows="2" placeholder="Rua, número, complemento, bairro, cidade, estado e CEP" data-conjuge-required></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="conj_nascimento">Data de nascimento <b>*</b></label>
+                    <input id="conj_nascimento" name="conj_nascimento" type="date" data-conjuge-required />
+                  </div>
+                  <div class="field">
+                    <label for="conj_estado_civil">Estado civil <b>*</b></label>
+                    <select id="conj_estado_civil" name="conj_estado_civil" data-conjuge-required>
+                      <option value="">Selecione</option>
+                      <option>Solteiro(a)</option><option>Casado(a)</option><option>União estável</option>
+                      <option>Divorciado(a)</option><option>Separado(a)</option><option>Viúvo(a)</option><option>Outro</option>
+                    </select>
+                  </div>
+                  <div class="field field-full">
+                    <label for="conj_profissao">Profissão <b>*</b></label>
+                    <input id="conj_profissao" name="conj_profissao" type="text" placeholder="Profissão" data-conjuge-required />
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend><span>03</span> Sobre a locação</legend>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="ocupantes">Quantas pessoas irão ocupar o imóvel? <b>*</b></label>
+                  <input id="ocupantes" name="ocupantes" type="number" min="1" max="99" inputmode="numeric" placeholder="Ex.: 2" required />
+                </div>
+                <div class="field">
+                  <label for="animais">Possui animais de estimação? <b>*</b></label>
+                  <input id="animais" name="animais" type="text" placeholder="Ex.: Não / Sim, 1 cachorro" required />
+                </div>
+              </div>
+            </fieldset>
+
+            <div id="form-error" class="form-error" role="alert" hidden></div>
+            <button class="generate-button" id="generate-button" type="submit">
+              <span class="download-symbol" aria-hidden="true">↓</span>
+              <span class="button-text">Baixar WORD e PDF</span>
+            </button>
+            <p class="button-help">Os dois arquivos serão baixados juntos em um ZIP. Nada é enviado para servidor.</p>
+          </form>
+        </section>
+
+        <aside class="preview-panel" aria-label="Pré-visualização da ficha">
+          <div class="preview-heading">
+            <div><p class="kicker">PRÉ-VISUALIZAÇÃO</p><h2>Documento</h2></div>
+            <span class="live-badge"><span></span> Ao vivo</span>
+          </div>
+          <div class="paper-stage" id="paper-stage">
+            <article class="document-preview" id="document-preview">
+              <header class="doc-header">
+                <img src="./assets/logo.png" alt="Imobiliária Casas Comigo" />
+                <div class="doc-company"><strong>IMOBILIÁRIA CASAS COMIGO LTDA</strong><strong>CNPJ: 41.585.450/0001-70</strong></div>
+              </header>
+              <div class="doc-rule"></div>
+              <h3>LOCAÇÃO VIA CREDPAGO OU SEGURO FIANÇA</h3>
+              <div class="doc-title-row"><strong>Ficha Cadastral</strong><strong class="ficha-no">Ficha nº: <span data-preview="ficha_numero">_____</span></strong></div>
+
+              <section class="doc-section">
+                <h4>Dados do Locatário:</h4>
+                <div class="doc-row two"><div><b>Cel:</b> <span data-preview="loc_cel"></span></div><div><b>Email:</b> <span data-preview="loc_email"></span></div></div>
+                <div class="doc-row"><b>Nome:</b> <span data-preview="loc_nome"></span></div>
+                <div class="doc-row two" id="preview-loc-docs"><div class="preview-rg"><b>RG:</b> <span data-preview="loc_rg"></span></div><div><b>CPF:</b> <span data-preview="loc_cpf"></span></div></div>
+                <div class="doc-row multiline"><b>End.Completo:</b> <span data-preview="loc_endereco"></span></div>
+                <div class="doc-row triple"><div><b>Data Nascimento:</b> <span data-preview="loc_nascimento"></span></div><div><b>Est.Civil:</b> <span data-preview="loc_estado_civil"></span></div><div><b>Profissão:</b> <span data-preview="loc_profissao"></span></div></div>
+              </section>
+
+              <section class="doc-section" id="preview-conjuge" hidden>
+                <h4>Cônjuge:</h4>
+                <div class="doc-row two"><div><b>Cel:</b> <span data-preview="conj_cel"></span></div><div><b>Email:</b> <span data-preview="conj_email"></span></div></div>
+                <div class="doc-row"><b>Nome:</b> <span data-preview="conj_nome"></span></div>
+                <div class="doc-row two"><div class="preview-conj-rg"><b>RG:</b> <span data-preview="conj_rg"></span></div><div><b>CPF:</b> <span data-preview="conj_cpf"></span></div></div>
+                <div class="doc-row multiline"><b>End.Completo:</b> <span data-preview="conj_endereco"></span></div>
+                <div class="doc-row triple"><div><b>Data Nascimento:</b> <span data-preview="conj_nascimento"></span></div><div><b>Est.Civil:</b> <span data-preview="conj_estado_civil"></span></div><div><b>Profissão:</b> <span data-preview="conj_profissao"></span></div></div>
+              </section>
+
+              <section class="doc-bottom-fields">
+                <p><b>Quantas pessoas irão ocupar o imóvel?</b> ( <span data-preview="ocupantes"></span> )</p>
+                <p><b>Possui animais de estimação? &nbsp; R:</b> <span data-preview="animais"></span></p>
+              </section>
+
+              <section class="doc-checklist">
+                <h4>DOC. LOCATÁRIO:</h4>
+                <p>1 - &nbsp;Comprovante de Residência</p>
+                <p>2 - &nbsp;Cópia do RG e cópia do CPF</p>
+                <p>3 - &nbsp;Ficha Cadastral</p>
+                <p>4 – Última fatura do cartão em PDF</p>
+              </section>
+
+              <footer class="doc-footer">
+                <div></div>
+                <strong>Av. Presidente Vargas, 1566 – Jardim das Cerejeiras – Atibaia – SP – CEP 12951-000</strong>
+                <strong>Tel. 11 4260-1255 – email: <u>contato@imobiliariacasascomigo.com.br</u></strong>
+              </footer>
+            </article>
+          </div>
+        </aside>
+      </main>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
