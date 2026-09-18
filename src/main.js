@@ -72,10 +72,39 @@ function resizePreview() {
 function safeFilename(value) {
   return String(value).replace(/[\\/*?:"<>|]/g, "").replace(/\s+/g, " ").trim().slice(0, 180);
 }
+async function loadTemplateBytes() {
+  const partNames = ["part00.txt", "part01.txt", "part02.txt", "part03.txt", "part04.txt", "part05.txt"];
+  const parts = await Promise.all(
+    partNames.map(async (name) => {
+      const response = await fetch(`${import.meta.env.BASE_URL}template/${name}`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Parte do modelo não encontrada: ${name}`);
+      return (await response.text()).trim();
+    }),
+  );
+
+  const base64 = parts.join("").replace(/\s+/g, "");
+  let binary;
+  try {
+    binary = atob(base64);
+  } catch {
+    throw new Error("O modelo Word não pôde ser decodificado.");
+  }
+
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+
+  if (bytes.length !== 31916) {
+    throw new Error(`Modelo Word incompleto (${bytes.length} de 31916 bytes).`);
+  }
+  if (bytes[0] !== 0x50 || bytes[1] !== 0x4b) {
+    throw new Error("O modelo Word não é um arquivo DOCX válido.");
+  }
+
+  return bytes;
+}
+
 async function createDocx(data) {
-  const response = await fetch(`${import.meta.env.BASE_URL}TEMPLATE.docx`);
-  if (!response.ok) throw new Error("O modelo DOCX não foi encontrado.");
-  const template = await response.arrayBuffer();
+  const template = await loadTemplateBytes();
   const zip = new PizZip(template);
   zip.file("word/document.xml", prepareTemplateXml(zip.file("word/document.xml").asText(), data));
   const doc = new Docxtemplater(zip, {
